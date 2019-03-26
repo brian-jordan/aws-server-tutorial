@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="https://sdk.amazonaws.com/js/aws-sdk-2.427.0.min.js"></script>
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+  <title>Docker :)</title>
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="css/format.css">
+   <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+</head>
+<body>
+
+  <!-- Primary Page Layout
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+
+<div class="mypanel"></div>
+<script>
+    $.getJSON('https://stream.twitter.com/1.1/statuses/filter.json?track=dogs', function(data) {
+
+        var text = `Date: ${data.date}<br>
+                    Time: ${data.time}<br>
+                    Unix time: ${data.milliseconds_since_epoch}`
+
+
+        $(".mypanel").html(text);
+    });
+//
+// var config = new AWS.Config({
+//
+//     });
+AWS.config.update({region: 'us-east-2', accessKeyId: 'AKIAJZEKUFN73WACG4HQ', secretAccessKey: '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', });
+console.log(AWS.config);
+emr = new AWS.EMR({});
+
+function runJobFlow() {
+  var params = {
+    Name: 'MapReduceJob',
+    ReleaseLabel: 'emr-5.21.0',
+    LogUri: 's3://aws-logs-161444768963-us-east-2/elasticmapreduce/',
+    Instances: {
+      KeepJobFlowAliveWhenNoSteps: false,
+      TerminationProtected: false,
+      InstanceGroups: [
+        {
+        Name: 'Master Instance Group',
+        InstanceRole: 'MASTER',
+        InstanceCount: 1,
+        InstanceType: 'm4.large',
+        Market: 'ON_DEMAND'
+        },
+        {
+        Name: 'Core Instance Group',
+        InstanceRole: 'CORE',
+        InstanceCount: 2,
+        InstanceType: 'm4.large',
+        Market: 'ON_DEMAND'
+      }]
+    },
+    Steps: [{
+      Name: 'WithProperties',
+      ActionOnFailure: 'TERMINATE_CLUSTER',
+      HadoopJarStep: {
+        Jar: 's3://us-east-2.elasticmapreduce/libs/script-runner/script-runner.jar',
+        Properties: [
+          {
+            Key: '-input',
+            Value: 's3://us-east-2.elasticmapreduce.samples'
+          },
+          {
+            Key: '-output',
+            Value: 's3://us-east-2.cloud-tutorial-for-duke'
+          },
+          {
+            Key: '-mapper',
+            Value: 's3://us-east-2.cloud-tutorial-for-duke/mrfolder/sample-mapper.js'
+          },
+          {
+            Key: '-reducer',
+            Value: 's3://us-east-2.cloud-tutorial-for-duke/mrfolder/sample-reducer.js'
+          }
+          // '-input', 's3://us-east-2.elasticmapreduce.samples',
+          // '-output', 's3://us-east-2.cloud-tutorial-for-duke',
+          // '-mapper', 's3://us-east-2.cloud-tutorial-for-duke/mrfolder/sample-mapper.js',
+          // '-reducer', 's3://us-east-2.cloud-tutorial-for-duke/mrfolder/sample-reducer.js'
+        ]
+      }
+    }],
+    BootstrapActions: [
+      {
+        Name: 'Install Node',
+        ScriptBootstrapAction: {
+          Path: 's3://node-install-script/nodeinstall.sh',
+        },
+      }
+    ],
+    JobFlowRole: 'EMR_EC2_DefaultRole',
+    ServiceRole: 'EMR_DefaultRole',
+  };
+
+  emr.runJobFlow(params, function(err, data) {
+    console.log('Running job with params: ' + params);
+    if (err) console.log(err, err.stack); // an error occurred
+    else     console.log(data);           // successful response
+  });
+}
+
+</script>
+
+<h1> Congratulations! You successfully launched a site.</h1>
+<div class="row">
+  	<div class="column">
+  		<h2>Task 1: Modify this image</h2>
+			Change the image below by uploading a new JPG to the html folder and referencing it here.
+  	</div>
+
+	<div class="column">
+		<h2>Task 2: Add an item to this list</h2>
+		Why I love Docker:
+		<ul>
+			<li>It has a cute whale logo</li>
+			<li>It saves configuration time</li>
+			<li>It avoid system-based errors</li>
+		</ul>
+	</div>
+
+	<div class="column">
+	<h2>Task 3: Add a new section</h2>
+		Add something fun here!
+	</div>
+</div>
+<div class="row">
+  <button onclick="runJobFlow()">Run Numbers!</button>
+</div>
+<br><br>
+
+<div class="polaroid">
+  	<img src="images/docker.jpg" alt="Docker meme" style="width:100%">
+  	<div class="container">
+  	<p>Docker meme</p>
+  	</div>
+</div>
+</body>
+</html>
+<!-- End Document
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
