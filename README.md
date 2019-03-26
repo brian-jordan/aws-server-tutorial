@@ -31,6 +31,24 @@ Next you need to upload the sample-mapper.js and sample-reducer.js files to an S
 Next create a blank bucket where output can be stored, and put it's path after the  `-output` argument. 
 
 Finally, create a bucket where the logs can be stored, and place that path in the `LogUri` variable. 
+Update policies:
+`{
+    "Id": "Policy1553621793148",
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "Stmt1553621746537",
+            "Action": "s3:*",
+            "Effect": "Allow",
+            "Resource": "arn:aws:s3:::ARN",
+            "Principal": {
+                "Service": [
+                    "elasticmapreduce.amazonaws.com"
+                ]
+            }
+        }
+    ]
+}`
 ### Calling EMR.runJobFlow()
 Peruse the `params` object, and see what exactly is being passed to the EMR instance you are initializing. You are calling a fleet of three servers, 1 master node, and 2 core nodes. The `steps` portion is where jobs are submitted to the cluster. In the `Args` section you will feed the `-input, -output, -mapper, -reducer` scripts, which will be stored on your S3, or a publicly accessible one. 
 
