@@ -25,3 +25,8 @@ Before you can run it, you must generate an accessKeyId and a secretAccessKey in
 line updates the AWS instance object to have the proper regions and your credentials. Replace the `'string'` values with the actual values you just created. 
 ### Calling EMR.runJobFlow()
 Peruse the `params` object, and see what exactly is being passed to the EMR instance you are initializing. You are calling a fleet of three servers, 1 master node, and 2 core nodes. The `steps` portion is where jobs are submitted to the cluster. In the `Args` section you will feed the `-input, -output, -mapper, -reducer` scripts, which will be stored on your S3, or a publicly accessible one. 
+
+
+
+#### Sources
+Mapper/Reducer programs: https://aws.amazon.com/blogs/big-data/node-js-streaming-mapreduce-with-amazon-emr/
