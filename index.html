@@ -34,7 +34,7 @@
 // var config = new AWS.Config({
 //
 //     });
-AWS.config.update({region: 'us-east-2', accessKeyId: 'AKIAJZEKUFN73WACG4HQ', secretAccessKey: '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', });
+AWS.config.update({region: 'us-east-2', accessKeyId: 'key', secretAccessKey: 'secret', }); //update this!
 console.log(AWS.config);
 emr = new AWS.EMR({});
 
@@ -66,28 +66,12 @@ function runJobFlow() {
       Name: 'WithProperties',
       ActionOnFailure: 'TERMINATE_CLUSTER',
       HadoopJarStep: {
-        Jar: 's3://us-east-2.elasticmapreduce/libs/script-runner/script-runner.jar',
-        Properties: [
-          {
-            Key: '-input',
-            Value: 's3://us-east-2.elasticmapreduce.samples'
-          },
-          {
-            Key: '-output',
-            Value: 's3://us-east-2.cloud-tutorial-for-duke'
-          },
-          {
-            Key: '-mapper',
-            Value: 's3://us-east-2.cloud-tutorial-for-duke/mrfolder/sample-mapper.js'
-          },
-          {
-            Key: '-reducer',
-            Value: 's3://us-east-2.cloud-tutorial-for-duke/mrfolder/sample-reducer.js'
-          }
-          // '-input', 's3://us-east-2.elasticmapreduce.samples',
-          // '-output', 's3://us-east-2.cloud-tutorial-for-duke',
-          // '-mapper', 's3://us-east-2.cloud-tutorial-for-duke/mrfolder/sample-mapper.js',
-          // '-reducer', 's3://us-east-2.cloud-tutorial-for-duke/mrfolder/sample-reducer.js'
+        Jar: '/usr/lib/hadoop-mapreduce/hadoop-streaming.jar',
+        Args: [
+          '-input', 's3://us-east-2.elasticmapreduce.samples',
+          '-output', 's3://us-east-2.cloud-tutorial-for-duke', //update this
+          '-mapper', 's3://us-east-2.cloud-tutorial-for-duke/mrfolder/sample-mapper.js', //update this
+          '-reducer', 's3://us-east-2.cloud-tutorial-for-duke/mrfolder/sample-reducer.js' //update this
         ]
       }
     }],
