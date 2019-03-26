@@ -42,7 +42,7 @@ function runJobFlow() {
   var params = {
     Name: 'MapReduceJob',
     ReleaseLabel: 'emr-5.21.0',
-    LogUri: 's3://aws-logs-161444768963-us-east-2/elasticmapreduce/',
+    LogUri: 's3://BUCKET-PATH', //update me
     Instances: {
       KeepJobFlowAliveWhenNoSteps: false,
       TerminationProtected: false,
@@ -69,9 +69,9 @@ function runJobFlow() {
         Jar: '/usr/lib/hadoop-mapreduce/hadoop-streaming.jar',
         Args: [
           '-input', 's3://us-east-2.elasticmapreduce.samples',
-          '-output', 's3://us-east-2.cloud-tutorial-for-duke', //update this
-          '-mapper', 's3://us-east-2.cloud-tutorial-for-duke/mrfolder/sample-mapper.js', //update this
-          '-reducer', 's3://us-east-2.cloud-tutorial-for-duke/mrfolder/sample-reducer.js' //update this
+          '-output', 's3://us-east-2.BUCKET-PATH', //update this
+          '-mapper', 's3://us-east-2.BUCKET-PATH/sample-mapper.js', //update this to your path
+          '-reducer', 's3://us-east-2.BUCKET-PATH/sample-reducer.js' //update this to your path
         ]
       }
     }],
@@ -79,7 +79,7 @@ function runJobFlow() {
       {
         Name: 'Install Node',
         ScriptBootstrapAction: {
-          Path: 's3://node-install-script/nodeinstall.sh',
+          Path: 's3://BUCKET-PATH/nodeinstall.sh',
         },
       }
     ],
