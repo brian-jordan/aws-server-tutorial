@@ -22,7 +22,15 @@ Before you can run it, you must generate an accessKeyId and a secretAccessKey in
   
   `AWS.config.update({region: 'us-east-2', accessKeyId: 'string', secretAccessKey: 'string', })` 
   
-line updates the AWS instance object to have the proper regions and your credentials. Replace the `'string'` values with the actual values you just created. 
+line updates the AWS instance object to have the proper regions and your credentials. Replace the `'string'` values with the actual values you just created.
+### Uploading Scripts to S3
+As you can see, there are a few things you need to update in the script portion of index.html. First, you need to upload the node-install.sh script somewhere into your S3, so that when your cluster is created, a boostrap action is called to install Node on the servers. Node.js is needed to run the mapper/reducer programs. 
+
+Next you need to upload the sample-mapper.js and sample-reducer.js files to an S3 bucket. 
+
+Next create a blank bucket where output can be stored, and put it's path after the  `-output` argument. 
+
+Finally, create a bucket where the logs can be stored, and place that path in the `LogUri` variable. 
 ### Calling EMR.runJobFlow()
 Peruse the `params` object, and see what exactly is being passed to the EMR instance you are initializing. You are calling a fleet of three servers, 1 master node, and 2 core nodes. The `steps` portion is where jobs are submitted to the cluster. In the `Args` section you will feed the `-input, -output, -mapper, -reducer` scripts, which will be stored on your S3, or a publicly accessible one. 
 
