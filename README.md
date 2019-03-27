@@ -41,11 +41,48 @@ At this point, you have a live website, whose link you could send to friends, an
 ## AWS Elastic Map Reduce (EMR) 
 AWS EMR allows users to call a server cluster to process Big Data efficiently. As we learned earlier, MapReduce programs split up a task, compute, and then reduce the computations. EMR let's you do this with multiple servers running the computations. We're going to add to our site a button which calls an EMR cluster through the Javascript SDK, and runs a simple counting task on a set of data. 
 ### Credentials
-Before you can run it, you must generate an accessKeyId and a secretAccessKey in the AWS IAM console. Click on your username in the top right corner of the console, and then click "My Security Credentials." A popup may appear, just x it out. Expand the "Access keys" section, and click "create new access key." Download the key file. Then, navigate to the index.html file, where you will see added lines in the <script> portion of the code. The 
-  
-  `AWS.config.update({region: 'us-east-2', accessKeyId: 'string', secretAccessKey: 'string', })` 
-  
-line updates the AWS instance object to have the proper regions and your credentials. Replace the `'string'` values with the actual values you just created.
+Before you can run it, you must generate an accessKeyId and a secretAccessKey in the AWS IAM console. 
+* Click on your username in the top right corner of the console, and then click "My Security Credentials." 
+* A popup may appear,  click 'Continue'. 
+* Expand the "Access keys" section, and click "Create new access key." 
+* Download the key file. 
+* Then, navigate to the index.html file, and open it in your favorite text editor.
+
+There are multiple values that must be updated, first:  
+*  `AWS.config.update({region: 'us-east-1', accessKeyId: 'string', secretAccessKey: 'string', })` 
+  * This code updates the AWS instance object to have the proper regions and your credentials. Replace the `'string'` values with the actual values you just created and downloaded. Now your AWS instance will be able to call on other AWS services with your credentials.
+### Uploading your scripts to S3
+Before we update our index.html file, let's go to S3 in our console and create a few buckets where we will be storing data for our MapReduce program. 
+* Output folder:
+   * Create a new bucket with a unique name, something like 'output-for-my-program', and create a blank folder in it titled 'output'
+   * Click on the 'Permissions' tab, and then 'Bucket Policy'
+   * Copy and paste the following into the editor, and change `ARN` to the ARN above the text field: 
+```
+{
+    "Id": "Policy1553621793148",
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "Stmt1553621746537",
+            "Action": "s3:*",
+            "Effect": "Allow",
+            "Resource": "ARN",
+            "Principal": {
+                "Service": [
+                    "elasticmapreduce.amazonaws.com"
+                ]
+            }
+        }
+    ]
+ }
+```
+* This allows for EMR calls made by you to have read/write permissions for the S3 bucket. This step will be reproduced for a few buckets. * In index.html, update `'-output', 's3://path/folder_name'` with the proper values. The path value is just the name of the bucket. 
+* Next, create a bucket for the MapReduce js programs, and then add  a folder to hold the sample-mapper.js, and sample-reducer.js programs. Upload them into the folder. Edit the permissions of the bucket just as above. 
+* Once again, in index.html, update `'-mapper', 's3://path/sample-mapper.js','-reducer', 's3://path/sample-reducer.js'` with the proper values. 
+* Next, a new bucket to house the node-install.sh script. Upload the script to the bucket. 
+* Copy the path of the script, and replace the `Path: 's3://path/nodeinstall.sh'`in `BootstrapActions`section with the proper path. 
+
+
 ### Uploading Scripts to S3
 As you can see, there are a few things you need to update in the script portion of index.html. First, you need to upload the node-install.sh script somewhere into your S3, so that when your cluster is created, a boostrap action is called to install Node on the servers. Node.js is needed to run the mapper/reducer programs. 
 
@@ -55,23 +92,7 @@ Next create a blank bucket where output can be stored, and put it's path after t
 
 Finally, create a bucket where the logs can be stored, and place that path in the `LogUri` variable. 
 Update policies:
-`{
-    "Id": "Policy1553621793148",
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "Stmt1553621746537",
-            "Action": "s3:*",
-            "Effect": "Allow",
-            "Resource": "arn:aws:s3:::ARN",
-            "Principal": {
-                "Service": [
-                    "elasticmapreduce.amazonaws.com"
-                ]
-            }
-        }
-    ]
-}`
+
 ### Calling EMR.runJobFlow()
 Peruse the `params` object, and see what exactly is being passed to the EMR instance you are initializing. You are calling a fleet of three servers, 1 master node, and 2 core nodes. The `steps` portion is where jobs are submitted to the cluster. In the `Args` section you will feed the `-input, -output, -mapper, -reducer` scripts, which will be stored on your S3, or a publicly accessible one. 
 
