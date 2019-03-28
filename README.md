@@ -17,7 +17,7 @@ Now that the server is up and running, you will connect to it from your local ma
 * You will need to change permissions of the private key so you can read it, do this by typing `<chmod 400 file_name.pem>` Now you are ready to connect to your instance! 
 * On the command line you must type: 
 `ssh -i /path/my-key-pair.pem user_name@public_dns_name`. 
-  * Plug in the proper values. For `user_name` it is generally `ec2-user`, and you can find the `public_dns_name` in the **EC2 console**. The console may respond asking if you wish to continue connecting because authenticity can't be established, **type yes**. Now you are connected to your EC2 instance, and can use it just as you use your local machine.
+  * Plug in the proper values. For `user_name` it is generally `ec2-user`, and you can find the `public_dns_name` in the **EC2 console column titled 'Public DNS (IPv4)**. The console may respond asking if you wish to continue connecting because authenticity can't be established, **type yes**. Now you are connected to your EC2 instance, and can use it just as you use your local machine.
   * Plug in the proper values. For user_name it is probably ec2-user, and you can find the public_dns_name in the EC2 console. The console may respond asking if you wish to continue connecting because authenticity can't be established, **type yes**. Now you are connected to your EC2 instance, and can use it just as you use your local machine.
   
 You can play around in the command line (`echo "Hello world!"`), but this section was mainly to show you what exactly the other services are running on top of. 
