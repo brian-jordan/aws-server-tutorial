@@ -45,14 +45,14 @@ Before you can run it, you must generate an accessKeyId and a secretAccessKey in
 * Click on your username in the top right corner of the console, and then click "My Security Credentials." 
 * A popup may appear,  click 'Continue'. 
 * Expand the "Access keys" section, and click "Create new access key." 
-* Download the key file. 
-* Then, navigate to the index.html file, and open it in your favorite text editor.
-
+* Download the key file.
+### Updating Index.html
+Navigate to the index.html file, and open it in your favorite text editor.
 There are multiple values that must be updated, first:  
 *  `AWS.config.update({region: 'us-east-1', accessKeyId: 'string', secretAccessKey: 'string', })` 
   * This code updates the AWS instance object to have the proper regions and your credentials. Replace the `'string'` values with the actual values you just created and downloaded. Now your AWS instance will be able to call on other AWS services with your credentials.
 ### Uploading your scripts to S3
-Before we update our index.html file, let's go to S3 in our console and create a few buckets where we will be storing data for our MapReduce program. 
+Before we update the rest of index.html file, let's go to S3 in our console and create a few buckets where we will be storing data for our MapReduce program. 
 * Output folder:
    * Create a new bucket with a unique name, something like 'output-for-my-program', and create a blank folder in it titled 'output'
    * Click on the 'Permissions' tab, and then 'Bucket Policy'
@@ -78,26 +78,15 @@ Before we update our index.html file, let's go to S3 in our console and create a
 ```
 * This allows for EMR calls made by you to have read/write permissions for the S3 bucket. This step will be reproduced for a few buckets. * In index.html, update `'-output', 's3://path/folder_name'` with the proper values. The path value is just the name of the bucket. 
 * Next, create a bucket for the MapReduce js programs, and then add  a folder to hold the sample-mapper.js, and sample-reducer.js programs. Upload them into the folder. Edit the permissions of the bucket just as above. 
-* Once again, in index.html, update `'-mapper', 's3://path/sample-mapper.js','-reducer', 's3://path/sample-reducer.js'` with the proper values. 
 * Next, a new bucket to house the node-install.sh script. Upload the script to the bucket. 
 * Copy the path of the script, and replace the `Path: 's3://path/nodeinstall.sh'`in `BootstrapActions`section with the proper path. 
 
-
-### Uploading Scripts to S3
-As you can see, there are a few things you need to update in the script portion of index.html. First, you need to upload the node-install.sh script somewhere into your S3, so that when your cluster is created, a boostrap action is called to install Node on the servers. Node.js is needed to run the mapper/reducer programs. 
-
-Next you need to upload the sample-mapper.js and sample-reducer.js files to an S3 bucket. 
-
-Next create a blank bucket where output can be stored, and put it's path after the  `-output` argument. 
-
-Finally, create a bucket where the logs can be stored, and place that path in the `LogUri` variable. 
-Update policies:
-
 ### Calling EMR.runJobFlow()
-Peruse the `params` object, and see what exactly is being passed to the EMR instance you are initializing. You are calling a fleet of three servers, 1 master node, and 2 core nodes. The `steps` portion is where jobs are submitted to the cluster. In the `Args` section you will feed the `-input, -output, -mapper, -reducer` scripts, which will be stored on your S3, or a publicly accessible one. 
+Peruse the `params` object, and see what exactly is being passed to the EMR instance you are initializing. You are calling a fleet of three servers, 1 master node, and 2 core nodes. The `Steps` portion is where jobs are submitted to the cluster. In the `Args` section we feed the `command-runner.jar` some command-line scripts to run. 
 
-
+### Click Run numbers
+This will run a step, and after it is done, check your S3 output bucket for the results!
 
 #### Sources
-Mapper/Reducer programs: https://aws.amazon.com/blogs/big-data/node-js-streaming-mapreduce-with-amazon-emr/
+Hive tutorial & code: https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-gs.html
 AWS Explanations: https://www.expeditedssl.com/aws-in-plain-english 
