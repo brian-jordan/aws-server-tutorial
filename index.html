@@ -30,19 +30,16 @@
 
         $(".mypanel").html(text);
     });
-//
-// var config = new AWS.Config({
-//
-//     });
-AWS.config.update({region: 'us-east-2', accessKeyId: 'key', secretAccessKey: 'secret', }); //update this!
+
+AWS.config.update({region: 'us-east-1', accessKeyId: 'AKIAJGKSH4HKYZ7T6PEA', secretAccessKey: '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', }); //update this!
 console.log(AWS.config);
 emr = new AWS.EMR({});
 
 function runJobFlow() {
   var params = {
     Name: 'MapReduceJob',
-    ReleaseLabel: 'emr-5.21.0',
-    LogUri: 's3://BUCKET-PATH', //update me
+    ReleaseLabel: 'emr-5.22.0',
+    LogUri: 's3://aws-logs-302074442417-us-east-1/elasticmapreduce/', //update me in form: aws-logs-ACCOUNT_NUMBER-REGION/elasticmapreduce/
     Instances: {
       KeepJobFlowAliveWhenNoSteps: false,
       TerminationProtected: false,
@@ -63,15 +60,14 @@ function runJobFlow() {
       }]
     },
     Steps: [{
-      Name: 'WithProperties',
+      Name: 'Hive Program',
       ActionOnFailure: 'TERMINATE_CLUSTER',
       HadoopJarStep: {
-        Jar: '/usr/lib/hadoop-mapreduce/hadoop-streaming.jar',
+        Jar: 'command-runner.jar',
         Args: [
-          '-input', 's3://us-east-2.elasticmapreduce.samples',
-          '-output', 's3://us-east-2.BUCKET-PATH', //update this
-          '-mapper', 's3://us-east-2.BUCKET-PATH/sample-mapper.js', //update this to your path
-          '-reducer', 's3://us-east-2.BUCKET-PATH/sample-reducer.js' //update this to your path
+          'hive-script', '--run-hive-script', '--args', '-f', 's3://us-east-1.elasticmapreduce.samples/cloudfront/code/Hive_CloudFront.q',
+          '-d', 'INPUT=s3://us-east-1.elasticmapreduce.samples',
+          '-d', 'OUTPUT=s3://output-for-mapreduce/output'
         ]
       }
     }],
@@ -79,12 +75,17 @@ function runJobFlow() {
       {
         Name: 'Install Node',
         ScriptBootstrapAction: {
-          Path: 's3://BUCKET-PATH/nodeinstall.sh',
+          Path: 's3://node-install-script-bucket/nodeinstall.sh',
         },
       }
     ],
     JobFlowRole: 'EMR_EC2_DefaultRole',
     ServiceRole: 'EMR_DefaultRole',
+    Applications: [
+      {
+        Name: 'Hive'
+      }
+    ]
   };
 
   emr.runJobFlow(params, function(err, data) {
