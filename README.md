@@ -51,6 +51,7 @@ Navigate to the index.html file, and open it in your favorite text editor.
 There are multiple values that must be updated, first:  
 *  `AWS.config.update({region: 'us-east-1', accessKeyId: 'string', secretAccessKey: 'string', })` 
   * This code updates the AWS instance object to have the proper regions and your credentials. Replace the `'string'` values with the actual values you just created and downloaded. Now your AWS instance will be able to call on other AWS services with your credentials.
+* Update the `LogUri` field in params to have your account-number, which can be found by clicking on your username in the top right, and then 'My Account' 
 ### Uploading your scripts to S3
 Before we update the rest of index.html file, let's go to S3 in our console and create a few buckets where we will be storing data for our MapReduce program. 
 * Output folder:
@@ -76,11 +77,10 @@ Before we update the rest of index.html file, let's go to S3 in our console and 
     ]
  }
 ```
-* This allows for EMR calls made by you to have read/write permissions for the S3 bucket. This step will be reproduced for a few buckets. * In index.html, update `'-output', 's3://path/folder_name'` with the proper values. The path value is just the name of the bucket. 
+* This allows for EMR calls made by you to have read/write permissions for the S3 bucket. This step will be reproduced for a few buckets. * In index.html, update `OUTPUT=s3://PATH/output'` with the proper values. The path value is just the name of the bucket. 
 * Next, create a bucket for the MapReduce js programs, and then add  a folder to hold the sample-mapper.js, and sample-reducer.js programs. Upload them into the folder. Edit the permissions of the bucket just as above. 
 * Next, a new bucket to house the node-install.sh script. Upload the script to the bucket. 
 * Copy the path of the script, and replace the `Path: 's3://path/nodeinstall.sh'`in `BootstrapActions`section with the proper path. 
-
 ### Calling EMR.runJobFlow()
 Peruse the `params` object, and see what exactly is being passed to the EMR instance you are initializing. You are calling a fleet of three servers, 1 master node, and 2 core nodes. The `Steps` portion is where jobs are submitted to the cluster. In the `Args` section we feed the `command-runner.jar` some command-line scripts to run. 
 
