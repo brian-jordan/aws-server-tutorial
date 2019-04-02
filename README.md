@@ -97,4 +97,5 @@ This will run a step, and after it is done, check your S3 output bucket for the 
 
 #### Sources
 Hive tutorial & code: https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-gs.html
+
 AWS Explanations: https://www.expeditedssl.com/aws-in-plain-english 
