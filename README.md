@@ -39,7 +39,15 @@ Once you have your Dockerfile files ready for use, uploading the webapp to the c
 * Click create. It will take a few minutes to launch, but once complete, you should be able to return to the environment page, and click on the url that now has the live version of your webapp! 
 At this point, you have a live website, whose link you could send to friends, and they could access it too. You could buy a domain name, and host that domain through this EB instance. 
 ## AWS Elastic Map Reduce (EMR) 
-AWS EMR allows users to call a server cluster to process Big Data efficiently. As we learned earlier, MapReduce programs split up a task, compute, and then reduce the computations. EMR let's you do this with multiple servers running the computations. We're going to add to our site a button which calls an EMR cluster through the Javascript SDK, and runs a simple counting task on a set of data. 
+AWS EMR allows users to call a server cluster to process Big Data efficiently. As we learned earlier, MapReduce programs split up a task, compute, and then reduce the computations. EMR let's you do this with multiple servers running the computations. We're going to add to our site a button which calls an EMR cluster through the Javascript SDK, and runs a simple counting task on a set of data. In this tutorial, we will be running a [Hive script](https://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-hive.html), which is a higher-level package that runs on top of Hadoop. It makes the calls for a MapReduce program more simple than in a language such as Java. If you'd like to view the script that we will be calling, you can find it in the [AWS Hive Tutorial](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-gs-process-sample-data.html). Read the section titled **Understanding the Data and Script** 
+### Launching a Cluster from the Console
+First, let's launch a cluster from the EMR console.
+* Click **Create cluster** in the top left corner.
+* Choose the latest version for **Release**, and **Core Hadoop** for Applications 
+* For **EC2 key pair** select 'proceed without an EC2 key pair'
+* Keep the rest of the default values, and click **Create cluster**
+* Once the cluster has spun up, you can terminate it. 
+We did this part to show you the options available for launching a cluster, so that the code version in JS is more familiar, but also to create the default roles (`EMR_EC2_DefaultRole` and `EMR_DefaultRole`)that are needed to launch a cluster. These roles are not attached to your account automatically, but are once you launch your first cluster through the console. Now we can proceed with our end goal: Launching a cluster to run a compuation through a JS call in a web-app. 
 ### Credentials
 Before you can run it, you must generate an accessKeyId and a secretAccessKey in the AWS IAM console. 
 * Click on your username in the top right corner of the console, and then click "My Security Credentials." 
@@ -85,7 +93,7 @@ Before we update the rest of index.html file, let's go to S3 in our console and 
 Peruse the `params` object, and see what exactly is being passed to the EMR instance you are initializing. You are calling a fleet of three servers, 1 master node, and 2 core nodes. The `Steps` portion is where jobs are submitted to the cluster. In the `Args` section we feed the `command-runner.jar` some command-line scripts to run. 
 
 ### Click Run numbers
-This will run a step, and after it is done, check your S3 output bucket for the results!
+This will run a step, and after it is done, check your S3 output bucket for the results! 
 
 #### Sources
 Hive tutorial & code: https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-gs.html
