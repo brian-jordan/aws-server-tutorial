@@ -32,6 +32,13 @@ You can play around in the command line (`echo "Hello world!"`), but this sectio
 * Select the instance, and choose **Actions, Instance State, Terminate**
 * Choose **Yes, Terminate**
 If you do not do this, you will eventually use up the free hours/month you are alotted. 
+#
+#
+> ```diff
+> + Checkpoint Number 1: At this point, you should have spun up and terminated an EC2 instance. 
+> ```
+#
+#
 ## AWS Elastic Beanstalk (EB)
 Now that you are familiar with the standard EC2 instance that AWS offers, let's get more robust. Elastic Beanstalk (EB) is an AWS Platform-as-a-Service that allows you to upload and deploy applications, and run them on top of an EC2 instance. EB allows for many different types of applications to be run on it, but as we have already created a containerized web app in the last section, why not continue with that example and use Docker as our configuration. Per AWS’s docs: 
 >By using Docker with Elastic Beanstalk, you have an infrastructure that automatically handles the details of capacity provisioning, load >balancing, scaling, and application health monitoring.
@@ -58,6 +65,13 @@ See [Troubleshooting] (https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/tr
 #### Terminate your EB instance
 * On your **Environment** page, Click **Actions, Terminate Environment**
 * On the **Application** page  Click **Actions, Delete Application**
+#
+#
+> ```diff
+> + Checkpoint Number 1: At this point, you should have created a live web-app. 
+> ```
+#
+#
 ## AWS Elastic Map Reduce (EMR) 
 AWS EMR allows users to call a server cluster to process Big Data efficiently. As we learned earlier, MapReduce programs split up a task, compute, and then reduce the computations. EMR let's you do this with multiple servers running the computations. We're going to add to our site a button which calls an EMR cluster through the Javascript SDK, and runs a simple counting task on a set of data. In this tutorial, we will be running a [Hive script](https://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-hive.html), which is a higher-level package that runs on top of Hadoop. It makes the calls for a MapReduce program more simple than in a language such as Java. If you'd like to view the script that we will be calling, you can find it in the [AWS Hive Tutorial](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-gs-process-sample-data.html). Read the section titled **Understanding the Data and Script** 
 ### Launching a Cluster from the Console
@@ -68,6 +82,13 @@ First, let's launch a cluster from the EMR console.
 * Keep the rest of the default values, and click **Create cluster**
 * Once the cluster has spun up, you can terminate it. 
 We did this part to show you the options available for launching a cluster, so that the code version in JS is more familiar, but also to create the default roles (`EMR_EC2_DefaultRole` and `EMR_DefaultRole`)that are needed to launch a cluster. These roles are not attached to your account automatically, but are once you launch your first cluster through the console. Now we can proceed with our end goal: Launching a cluster to run a compuation through a JS call in a web-app. 
+#
+#
+> ```diff
+> + Checkpoint Number 1: At this point, you should have launched your first cluster.
+> ```
+#
+#
 ### Credentials
 Before you can run it, you must generate an accessKeyId and a secretAccessKey in the AWS IAM console. 
 * Click on your username in the top right corner of the console, and then click "My Security Credentials." 
@@ -112,6 +133,13 @@ Before we update the rest of index.html file, let's go to S3 in our console and 
 * Copy the path of the script (by clicking on the script while inside the bucket, and selecting **Copy path**, and replace on line 78 `Path: 's3://path/nodeinstall.sh'`in `BootstrapActions`section with the proper path.Just highlight the entire default s3 value, and paste in the proper new path you just copied from the console. 
 ### Looking at EMR.runJobFlow()
 Peruse the `params` object in index.html, and see what exactly is being passed to the EMR instance you are initializing. You should recognize some of the values from when you started up an EMR cluster from the console. You are calling a fleet of three servers, 1 master node, and 2 core nodes. The `Steps` portion is where jobs are submitted to the cluster. The `Jar` value is `command-runner.jar`, which is a simple file AWS provides that allows us to run some command-line scripts. In `Args` we have `'hive-script'`passed first, which tells the command-runner that the next arguments will be for a hive script. The first s3 file is the Hive script alluded to at the start of the EMR section. The `INPUT`object is where the data is coming from that the Hive script is mapping and reducing. 
+#
+#
+> ```diff
+> + Checkpoint Number 1: At this point, index.html should have new values for all the lines with the //update 
+> ```
+#
+#
 ### Click Run numbers
 This will run a step, and after it is done, check your S3 output bucket for the results! 
 #### Sources
