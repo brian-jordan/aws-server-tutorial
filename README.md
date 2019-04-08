@@ -1,5 +1,7 @@
 # AWS Tutorial CS308
 AWS provides a comprehensive suite of development tools to take your code completely onto the cloud. It offers developers the ability to upload static webapps on services like **Elastic Cloud Compute (EC2)**, automatically scale servers with services like **Elastic Beanstalk** (think: Jack's magical beans which *automatically* grow up), keep data in a simple, easily read/write-able storage with **Amazon Simple Storage Service (S3)** and have server clusters on standby to run backend computations efficiently with **Amazon Elastic MapReduce (EMR)**. AWS provides all the infrastructure for this, so that developers do not have to worry about any of the difficulties that come with maintaining their own servers. Have you ever wanted to get a website up and running quickly, but do not have the access or know-how to operate servers? Follow this tutorial and you will be able to do that. Note: the AWS Free Tier *should* have you covered for all the uses in this tutorial, just don't do anything crazy, and terminate our instances after use. 
+## Make an AWS Account
+[Create a new AWS Account](https://portal.aws.amazon.com/billing/signup#/start). Choose the free tier, enter card information, etc. You will not be charged unless you refrain from terminating instances after use. Once you have successfully created and confirmed a new account, you should be redirected to the home console page. Next to your username in the top right you should see either "Ohio" or "N. Virginia", if your region is Ohio, change it to N. Virginia. This just ensures that all the instances started in this tutorial will be in the same region, so that they can work together when the time comes!
 ## AWS Elastic Cloud Compute (EC2)
 EC2 is a service which provides virtual machines for users to run their own applications on the cloud. It forms the bedrock for many other AWS services, such as AWS Elastic Beanstalk, which will be used later in the tutorial. Simply put, EC2 essentially is hosting a computer for you to use on the cloud. 
 ### Getting started with EC2
@@ -11,31 +13,37 @@ EC2 is a service which provides virtual machines for users to run their own appl
 * You will then be prompted to create a new key pair to authenticate yourself to the servers. This will allow you to access the servers from your local machine's console, while not allowing anyone without the private key access. Download your key pair, and wait for your server to launch.  
 #### Connecting to your EC2 instance
 Now that the server is up and running, you will connect to it from your local machine. If you have any problems with the below directions, see the AWS documentation for [Connect to Your Linux Instance](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstances.html)
+**Mac Directions:** 
 * Open Terminal, or your preferred command line application. 
-* Ensure you have SSH by typing ssh into the command line. 
+* Ensure you have SSH by typing `ssh` into the command line. 
 * Change directories (`cd Path_To_File` or something of the like) to the folder containing the .pem file with the key pair. 
 * You will need to change permissions of the private key so you can read it, do this by typing `<chmod 400 file_name.pem>` Now you are ready to connect to your instance! 
 * On the command line you must type: 
 `ssh -i /path/my-key-pair.pem user_name@public_dns_name`. 
   * Plug in the proper values. For `user_name` it is generally `ec2-user`, and you can find the `public_dns_name` in the **EC2 console column titled 'Public DNS (IPv4)**. The console may respond asking if you wish to continue connecting because authenticity can't be established, **type yes**. Now you are connected to your EC2 instance, and can use it just as you use your local machine.
   * Plug in the proper values. For user_name it is probably ec2-user, and you can find the public_dns_name in the EC2 console. The console may respond asking if you wish to continue connecting because authenticity can't be established, **type yes**. Now you are connected to your EC2 instance, and can use it just as you use your local machine.
-  
+**Windows Directions:**
+* See the link at the top of this section for detailed instructions on a few ways to connect on a Windows device
+* The recommended way is through [PuTTY](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/putty.html), which allows you both to convert the private key's permissions, and also provides an ssh client to access the server. Follow the directions linked here.
 You can play around in the command line (`echo "Hello world!"`), but this section was mainly to show you what exactly the other services are running on top of. 
-#### Terminating EC2 instance
-Navigate to the EC2 console, and Terminate the instance. If you do not do this, you will eventually use up the free hours/month you are alotted. 
-## Elastic Beanstalk (EB)
-Now that you are familiar with the standard EC2 instance that AWS offers, let's get more robust. Elastic Beanstalk (EBS) is an AWS Platform-as-a-Service that allows you to upload and deploy applications, and run them on top of an EC2 instance. EBS allows for many different types of applications to be run on it, but as we have already created a containerized web app in the last section, why not continue with that example and use Docker as our configuration. Per AWS’s docs: 
+#### Terminating EC2 instance (VERY IMPORTANT!)
+* Navigate to the EC2 console 
+* In the navigation pane, choose **Instances**
+* Select the instance, and choose **Actions, Instance State, Terminate**
+* Choose **Yes, Terminate**
+If you do not do this, you will eventually use up the free hours/month you are alotted. 
+## AWS Elastic Beanstalk (EB)
+Now that you are familiar with the standard EC2 instance that AWS offers, let's get more robust. Elastic Beanstalk (EB) is an AWS Platform-as-a-Service that allows you to upload and deploy applications, and run them on top of an EC2 instance. EB allows for many different types of applications to be run on it, but as we have already created a containerized web app in the last section, why not continue with that example and use Docker as our configuration. Per AWS’s docs: 
 >By using Docker with Elastic Beanstalk, you have an infrastructure that automatically handles the details of capacity provisioning, load >balancing, scaling, and application health monitoring.
-This is great! By using EBS with Docker we are alleviating much of the stress that is brought with utilizing servers to do our processing. 
+This is great! By using EB with Docker we are alleviating much of the stress that is brought with utilizing servers to do our processing. 
 ### Getting Started
 #### Updating the Webapp
-Before you can upload your webapp to the cloud, the Dockerfile must be updated to include the line `EXPOSE 80`. This line exposes the 80-port, so that the server can attach to it. 
-#### Deploying to EBS 
+Navigate to the Dockerfile in this tutorial's directory. You should see that the line `EXPOSE 80`has been added. This line is added so that the Docker image is built with a port that the server can access to use the image as the webpage. 
+#### Deploying to EB 
 Once you have your Dockerfile files ready for use, uploading the webapp to the cloud is very simple. 
-* Open the AWS EBS console, and click Create New Application. Put in an application name like "AWS-Tutorial" and click Create. 
-* Then create a new environment in this application. 
-* Choose web server environment, and choose Docker from the preconfigured platform. 
-* In the Application code section, choose "upload your code", and select the .zip file containing your web app. **Note: Compress the files by highlighting the 3 files in the directory, and clicking compress 3 items. If the root of the directory is a parent folder, it will not work, because Dockerfile will not be accessible. Weird little quirk, but it will not work if you miss this**
+* First, if you have not already, download the files from this tutorial to your local machine.
+* Then, open the folder, highlight the 2 files **Dockerfile**, **html**, control click, and select **Compress**. 
+* Open the AWS EB console, and click **Create New Application**. Put in an application name like "AWS-Tutorial" and click **Create**  (**Note: Compress the files by highlighting the 2 files in the directory, and clicking compress 2 items. If the root of the directory is a parent folder, it will not work, because Dockerfile will not be accessible. Weird little quirk, but it will not work if you miss this**)
 * Click create. It will take a few minutes to launch, but once complete, you should be able to return to the environment page, and click on the url that now has the live version of your webapp! 
 At this point, you have a live website, whose link you could send to friends, and they could access it too. You could buy a domain name, and host that domain through this EB instance. 
 ## AWS Elastic Map Reduce (EMR) 
