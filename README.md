@@ -68,7 +68,7 @@ See [Troubleshooting] (https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/tr
 #
 #
 > ```diff
-> + Checkpoint Number 1: At this point, you should have created a live web-app. 
+> + Checkpoint Number 2: At this point, you should have created a live web-app. 
 > ```
 #
 #
@@ -85,7 +85,7 @@ We did this part to show you the options available for launching a cluster, so t
 #
 #
 > ```diff
-> + Checkpoint Number 1: At this point, you should have launched your first cluster.
+> + Checkpoint Number 3: At this point, you should have launched your first cluster.
 > ```
 #
 #
@@ -136,7 +136,7 @@ Peruse the `params` object in index.html, and see what exactly is being passed t
 #
 #
 > ```diff
-> + Checkpoint Number 1: At this point, index.html should have new values for all the lines with the //update 
+> + Checkpoint Number 4: At this point, index.html should have new values for all the lines with the //update 
 > ```
 #
 #
