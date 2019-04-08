@@ -42,10 +42,22 @@ Navigate to the Dockerfile in this tutorial's directory. You should see that the
 #### Deploying to EB 
 Once you have your Dockerfile files ready for use, uploading the webapp to the cloud is very simple. 
 * First, if you have not already, download the files from this tutorial to your local machine.
-* Then, open the folder, highlight the 2 files **Dockerfile**, **html**, control click, and select **Compress**. 
-* Open the AWS EB console, and click **Create New Application**. Put in an application name like "AWS-Tutorial" and click **Create**  (**Note: Compress the files by highlighting the 2 files in the directory, and clicking compress 2 items. If the root of the directory is a parent folder, it will not work, because Dockerfile will not be accessible. Weird little quirk, but it will not work if you miss this**)
-* Click create. It will take a few minutes to launch, but once complete, you should be able to return to the environment page, and click on the url that now has the live version of your webapp! 
+* Then, open the folder, highlight the 2 files **Dockerfile**, **html**, control click, and select **Compress**. (**Note: Compress the files by highlighting the 2 files in the directory, and clicking compress 2 items. If the root of the directory is a parent folder, it will not work, because Dockerfile will not be accessible. Weird little quirk, but it will not work if you miss this**)
+* Open the AWS EB console, and click **Get started** (or if you have already used EB, **Create New Application**). 
+* Put in an **Application name** like "AWS-Tutorial"
+* For **Platform** select **Docker**
+* For **Application code** select **Upload your code** and upload the .zip you just created.
+** Click **Create application**
+It will take a few minutes to launch, but once complete, you should be able to return to the environment page, and click on the url that now has the live version of your webapp! 
 At this point, you have a live website, whose link you could send to friends, and they could access it too. You could buy a domain name, and host that domain through this EB instance. 
+#### Troubleshooting
+* If your deployment was aborted, make sure that you followed the bolded directions about compressing your file. Once again, do not compress the folder 'aws-server-tutorial', but rather navigate inside the folder, highlight the 2 separate files, and click Compress.
+* If you need to redeploy, navigate to your Applications page, and click **Actions, Create environment**, and follow the original directions, renaming your code-source if need be.
+    * This is because redeploying to the original environment with new source code will cause an error because it is not a newer version, but rather a completely new set of files (to the console, at least) 
+See [Troubleshooting] (https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/troubleshooting.html) for further information. 
+#### Terminate your EB instance
+* On your **Environment** page, Click **Actions, Terminate Environment**
+* On the **Application** page  Click **Actions, Delete Application**
 ## AWS Elastic Map Reduce (EMR) 
 AWS EMR allows users to call a server cluster to process Big Data efficiently. As we learned earlier, MapReduce programs split up a task, compute, and then reduce the computations. EMR let's you do this with multiple servers running the computations. We're going to add to our site a button which calls an EMR cluster through the Javascript SDK, and runs a simple counting task on a set of data. In this tutorial, we will be running a [Hive script](https://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-hive.html), which is a higher-level package that runs on top of Hadoop. It makes the calls for a MapReduce program more simple than in a language such as Java. If you'd like to view the script that we will be calling, you can find it in the [AWS Hive Tutorial](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-gs-process-sample-data.html). Read the section titled **Understanding the Data and Script** 
 ### Launching a Cluster from the Console
@@ -67,13 +79,15 @@ Navigate to the index.html file, and open it in your favorite text editor.
 There are multiple values that must be updated, first:  
 *  `AWS.config.update({region: 'us-east-1', accessKeyId: 'string', secretAccessKey: 'string', })` 
   * This code updates the AWS instance object to have the proper regions and your credentials. Replace the `'string'` values with the actual values you just created and downloaded. Now your AWS instance will be able to call on other AWS services with your credentials.
-* Update the `LogUri` field in params to have your account-number, which can be found by clicking on your username in the top right, and then 'My Account' 
+* Update the `LogUri` field in params to have your account-number, which can be found by clicking on your username in the top right of the console, and then 'My Account' 
 ### Uploading your scripts to S3
-Before we update the rest of index.html file, let's go to S3 in our console and create a few buckets where we will be storing data for our MapReduce program. 
+S3 is a simple storage service that can be accessed by AWS customers and instances alike. We will use it to house our files that will be written to when we call our MapReduce program, as well as store a script we will call when instantiating our cluster. 
+Before we update the rest of index.html file, let's go to S3 in our console and create a few buckets where we will be storing data for our MapReduce program. An S3 'bucket' is essentially a folder. 
 * Output folder:
-   * Create a new bucket with a unique name, something like 'output-for-my-program', and create a blank folder in it titled 'output'
-   * Click on the 'Permissions' tab, and then 'Bucket Policy'
-   * Copy and paste the following into the editor, and change `ARN` to the ARN above the text field: 
+   * Click **Create bucket**, enter a unique **Bucket name** something like 'output-for-my-program-lastname'
+   * Click **Create folder** when inside the bucket, and title it 'output'
+   * Inside the bucket, Click on the **Permissions** tab, and then **Bucket Policy** below it.
+   * Copy and paste the following into the editor, and change the value of `Resource` from `ARN` to the full ARN above the text field (should look something like this: `arn:aws:s3:::output-for-my-program`): 
 ```
 {
     "Id": "Policy1553621793148",
@@ -93,17 +107,13 @@ Before we update the rest of index.html file, let's go to S3 in our console and 
     ]
  }
 ```
-* This allows for EMR calls made by you to have read/write permissions for the S3 bucket. This step will be reproduced for a few buckets. * In index.html, update `OUTPUT=s3://PATH/output'` with the proper values. The path value is just the name of the bucket. 
-* Next, create a bucket for the MapReduce js programs, and then add  a folder to hold the sample-mapper.js, and sample-reducer.js programs. Upload them into the folder. Edit the permissions of the bucket just as above. 
-* Next, a new bucket to house the node-install.sh script. Upload the script to the bucket. 
-* Copy the path of the script, and replace the `Path: 's3://path/nodeinstall.sh'`in `BootstrapActions`section with the proper path. 
-### Calling EMR.runJobFlow()
-Peruse the `params` object, and see what exactly is being passed to the EMR instance you are initializing. You are calling a fleet of three servers, 1 master node, and 2 core nodes. The `Steps` portion is where jobs are submitted to the cluster. In the `Args` section we feed the `command-runner.jar` some command-line scripts to run. 
-
+* This allows for EMR calls made by you to have read/write permissions for the S3 bucket. This step will be reproduced for a few buckets. * In index.html, on line 70, update `OUTPUT=s3://PATH/output'` with the proper values. The path value is just the name of the bucket. It should look like: `'OUTPUT=s3://output-for-my-program/output'`
+* Next, create a new bucket to house the node-install.sh script. Follow the same directions as above, creating a new bucket with a unique name like 'node-install-script-bucket', then click **Upload** and upload nodeinstall.sh to the bucket. Update the **Permissions** of the bucket as you did above, plugging in the proper `ARN` 
+* Copy the path of the script (by clicking on the script while inside the bucket, and selecting **Copy path**, and replace on line 78 `Path: 's3://path/nodeinstall.sh'`in `BootstrapActions`section with the proper path.Just highlight the entire default s3 value, and paste in the proper new path you just copied from the console. 
+### Looking at EMR.runJobFlow()
+Peruse the `params` object in index.html, and see what exactly is being passed to the EMR instance you are initializing. You should recognize some of the values from when you started up an EMR cluster from the console. You are calling a fleet of three servers, 1 master node, and 2 core nodes. The `Steps` portion is where jobs are submitted to the cluster. The `Jar` value is `command-runner.jar`, which is a simple file AWS provides that allows us to run some command-line scripts. In `Args` we have `'hive-script'`passed first, which tells the command-runner that the next arguments will be for a hive script. The first s3 file is the Hive script alluded to at the start of the EMR section. The `INPUT`object is where the data is coming from that the Hive script is mapping and reducing. 
 ### Click Run numbers
 This will run a step, and after it is done, check your S3 output bucket for the results! 
-
 #### Sources
 Hive tutorial & code: https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-gs.html
-
 AWS Explanations: https://www.expeditedssl.com/aws-in-plain-english 
