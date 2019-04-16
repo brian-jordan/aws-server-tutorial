@@ -49,17 +49,15 @@ Navigate to the Dockerfile in this tutorial's directory. You should see that the
 #### Deploying to EB 
 Once you have your Dockerfile files ready for use, uploading the webapp to the cloud is very simple. 
 * First, if you have not already, download the files from this tutorial to your local machine.
-* Then, open the folder, highlight the 2 files **Dockerfile**, **html**, control click, and select **Compress**. (**Note: Compress the files by highlighting the 2 files in the directory, and clicking compress 2 items. If the root of the directory is a parent folder, it will not work, because Dockerfile will not be accessible. Weird little quirk, but it will not work if you miss this**)
 * Open the AWS EB console, and click **Get started** (or if you have already used EB, **Create New Application**). 
 * Put in an **Application name** like "AWS-Tutorial"
 * For **Platform** select **Docker**
-* For **Application code** select **Upload your code** and upload the .zip you just created.
+* For **Application code** select **Upload your code** and upload the **Package.zip** in the directory. This .zip contains **html** and **Dockerfile** compressed.
 ** Click **Create application**
 It will take a few minutes to launch, but once complete, you should be able to return to the environment page, and click on the url that now has the live version of your webapp! 
 At this point, you have a live website, whose link you could send to friends, and they could access it too. You could buy a domain name, and host that domain through this EB instance. 
 #### Troubleshooting
-* If your deployment was aborted, make sure that you followed the bolded directions about compressing your file. Once again, do not compress the folder 'aws-server-tutorial', but rather navigate inside the folder, highlight the 2 separate files, and click Compress.
-* If you need to redeploy, navigate to your Applications page, and click **Actions, Create environment**, and follow the original directions, renaming your code-source if need be.
+* If your deployment was aborted, and you need to redeploy, navigate to your Applications page, and click **Actions, Create environment**, and follow the original directions, renaming your code-source if need be.
     * This is because redeploying to the original environment with new source code will cause an error because it is not a newer version, but rather a completely new set of files (to the console, at least) 
 See [Troubleshooting] (https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/troubleshooting.html) for further information. 
 #### Terminate your EB instance
