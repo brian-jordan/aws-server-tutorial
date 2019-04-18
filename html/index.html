@@ -31,7 +31,7 @@
         $(".mypanel").html(text);
     });
 
-AWS.config.update({region: 'us-east-1', accessKeyId: 'string', secretAccessKey: 'string', }); //update this!
+AWS.config.update({region: 'us-east-1', accessKeyId: 'AKIAJQCDAJ3IO7HVSCNA', secretAccessKey: '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', }); //update this!
 console.log(AWS.config);
 emr = new AWS.EMR({});
 
@@ -39,7 +39,7 @@ function runJobFlow() {
   var params = {
     Name: 'MapReduceJob',
     ReleaseLabel: 'emr-5.22.0',
-    LogUri: 's3://aws-logs-ACCOUNT_NUMBER-us-east-1/elasticmapreduce/', //update me in form: aws-logs-ACCOUNT_NUMBER-REGION/elasticmapreduce/
+    LogUri: 's3://aws-logs-842437233144-us-east-1/elasticmapreduce/', //update me in form: aws-logs-ACCOUNT_NUMBER-REGION/elasticmapreduce/
     Instances: {
       KeepJobFlowAliveWhenNoSteps: false,
       TerminationProtected: false,
